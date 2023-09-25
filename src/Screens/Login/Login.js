@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './Login.css';
 
-const Login = () => {
+const Login = ({ next }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -20,6 +20,7 @@ const Login = () => {
       if (response.status === 200) {
         setSuccessMessage('Inicio de sesión exitoso.');
         setErrorMessage('');
+        next();
       } else {
         setErrorMessage('Inicio de sesión fallido.');
         setSuccessMessage('');
@@ -37,6 +38,7 @@ const Login = () => {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <input
+              className="form-input"
               type="text"
               id="username"
               name="username"
@@ -48,6 +50,7 @@ const Login = () => {
           </div>
           <div className="form-group">
             <input
+              className="form-input"
               type="password"
               id="password"
               name="password"
@@ -57,7 +60,7 @@ const Login = () => {
               required
             />
           </div>
-          <button type="submit">Iniciar Sesión</button>
+          <button className="form-button" type="submit">Iniciar Sesión</button>
         </form>
         {successMessage && <div className="success">{successMessage}</div>}
         {errorMessage && <div className="error">{errorMessage}</div>}

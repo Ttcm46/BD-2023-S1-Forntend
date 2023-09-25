@@ -1,90 +1,139 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { insertArticulo, getClases, updateArticulo, getArticulosByCode, borrarArticulo } from '../../Http/http';
 
 import './CrudForm.css'
 
-const ModalForm = ({ _type, _code, _name, _class, _precio, handleModalClose }) => {
+const ModalForm = ({ _type, handleModalClose }) => {
   if (_type === 1) {
     return (
       <Insertar
-        _code={_code}
-        _name={_name}
-        _class={_class}
-        _price={_precio}
         handleModalClose={handleModalClose}
       />
     );
   } else if (_type === 2) {
     return (
       <Modificar
-        _code={_code}
-        _name={_name}
-        _class={_class}
-        _price={_precio}
         handleModalClose={handleModalClose}
       />
     );
   } else if (_type === 3) {
     return (
       <Eliminar
-        _code={_code}
         handleModalClose={handleModalClose}
       />
     );
   }
 };
 
-const Insertar = ({ _code, _name, _class, _price, handleModalClose }) => {
+const Insertar = ({ handleModalClose }) => {
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [clase, setClase] = useState('');
   const [price, setPrice] = useState('');
+  const [clasesList, setClasesList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    getClases()
+      .then((clases) => {
+        setClasesList(clases);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error al obtener clases:', error);
+        setIsLoading(false);
+      });
+  }, []);
+
+  const handleInsertClick = async () => {
+    try {
+      await insertArticulo(name, price, code, clase);
+      alert('Artículo insertado con éxito');
+      handleModalClose()
+    } catch (error) {
+      alert('Error al insertar el artículo');
+    }
+  };
 
   return (
     <div className="ModalOverlay">
       <div className="ModalContent">
         <h2>Insertar Nuevo Articulo</h2>
         <p>Código:</p>
-        <input
-          type="text"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-        />
+        <input type="text" value={code} onChange={(e) => setCode(e.target.value)} />
         <br />
         <p>Nombre:</p>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+        <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
         <p>Clase:</p>
-        <input
-          type="text"
-          value={clase}
-          onChange={(e) => setClase(e.target.value)}
-        />
+        {isLoading ? (
+          <p>Cargando clases...</p>
+        ) : (
+          <select value={clase} onChange={(e) => setClase(e.target.value)}>
+            <option value="">Seleccionar Clase</option>
+            {clasesList.map((claseItem) => (
+              <option key={claseItem.id} value={claseItem.nombre}>
+                {claseItem.nombre}
+              </option>
+            ))}
+          </select>
+        )}
         <br />
         <p>Precio:</p>
-        <input
-          type="text"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-        />
+        <input type="text" value={price} onChange={(e) => setPrice(e.target.value)} />
         <br />
         <div className="ModalButtons">
-          <button onClick={handleModalClose} style={{ backgroundColor: 'red' }}>Cerrar</button>
-          <button style={{ backgroundColor: 'green' }}>Insertar</button>
+          <button onClick={handleModalClose} style={{ backgroundColor: 'red' }}>
+            Cerrar
+          </button>
+          <button onClick={handleInsertClick} style={{ backgroundColor: 'green' }}>
+            Insertar
+          </button>
         </div>
       </div>
     </div>
   );
-}
+};
 
-const Modificar = ({ _code, _name, _class, _price, handleModalClose }) => {
+
+const Modificar = ({handleModalClose }) => {
   const [state, setState] = useState(false);
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [clase, setClase] = useState('');
   const [price, setPrice] = useState('');
+  const [clasesList, setClasesList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    getClases()
+      .then((clases) => {
+        setClasesList(clases);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error al obtener clases:', error);
+        setIsLoading(false);
+      });
+  }, []);
+
+  const handleUpdateClick = async () => {
+    try {
+      await updateArticulo("", name, price, code, clase);
+      alert('Artículo modificado con éxito');
+      handleModalClose()
+    } catch (error) {
+      alert('Error al modificar el artículo');
+    }
+  }
+
+  const handleVerifyClick = async () => {
+    try {
+      await getArticulosByCode(code);
+      setState(true)
+    } catch (error) {
+      alert('Artículo no encontrado');
+    }
+  }
 
   return (
     !state ? (
@@ -100,7 +149,7 @@ const Modificar = ({ _code, _name, _class, _price, handleModalClose }) => {
           <br />
           <div className="ModalButtons">
             <button onClick={handleModalClose} style={{ backgroundColor: 'red' }}>Cerrar</button>
-            <button onClick={() => setState(true)} style={{ backgroundColor: 'green' }}>Siguiente</button>
+            <button onClick={handleVerifyClick} style={{ backgroundColor: 'green' }}>Siguiente</button>
           </div>
         </div>
       </div>
@@ -121,12 +170,18 @@ const Modificar = ({ _code, _name, _class, _price, handleModalClose }) => {
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
-          <p>Clase:</p>
-          <input
-            type="text"
-            value={clase}
-            onChange={(e) => setClase(e.target.value)}
-          />
+          {isLoading ? (
+          <p>Cargando clases...</p>
+          ) : (
+            <select value={clase} onChange={(e) => setClase(e.target.value)}>
+              <option value="">Seleccionar Clase</option>
+              {clasesList.map((claseItem) => (
+                <option key={claseItem.id} value={claseItem.nombre}>
+                  {claseItem.nombre}
+                </option>
+              ))}
+            </select>
+          )}
           <br />
           <p>Precio:</p>
           <input
@@ -137,7 +192,7 @@ const Modificar = ({ _code, _name, _class, _price, handleModalClose }) => {
           <br />
           <div className="ModalButtons">
             <button onClick={() => setState(false)} style={{ backgroundColor: 'red' }}>Volver</button>
-            <button onClick={handleModalClose} style={{ backgroundColor: 'green' }}>Modificar</button>
+            <button onClick={handleUpdateClick} style={{ backgroundColor: 'green' }}>Modificar</button>
           </div>
         </div>
       </div>
@@ -148,6 +203,27 @@ const Modificar = ({ _code, _name, _class, _price, handleModalClose }) => {
 const Eliminar = ({ _code, handleModalClose }) => {
   const [state, setState] = useState(false);
   const [code, setCode] = useState('');
+  const [articulo, setArticulo] = useState({})
+
+  const handleDeleteClick = async () => {
+    try {
+      await borrarArticulo(code);
+      alert('Artículo eliminado con éxito');
+      handleModalClose()
+    } catch (error) {
+      alert('Error al eliminar el artículo');
+    }
+  }
+
+  const handleVerifyClick = async () => {
+    try {
+      const response = await getArticulosByCode(code);
+      setArticulo(response)
+      setState(true)
+    } catch (error) {
+      alert('Artículo no encontrado');
+    }
+  }
 
   return (
     !state ? (
@@ -163,7 +239,7 @@ const Eliminar = ({ _code, handleModalClose }) => {
           <br />
           <div className="ModalButtons">
             <button onClick={handleModalClose} style={{ backgroundColor: 'red' }}>Cerrar</button>
-            <button onClick={() => setState(true)} style={{ backgroundColor: 'green' }}>Siguiente</button>
+            <button onClick={handleVerifyClick} style={{ backgroundColor: 'green' }}>Siguiente</button>
           </div>
         </div>
       </div>
@@ -172,9 +248,10 @@ const Eliminar = ({ _code, handleModalClose }) => {
         <div className="ModalContent">
           <h2>Producto Eliminado</h2>
           <br />
+          <p>{articulo}</p>
           <div className="ModalButtons">
             <button onClick={() => setState(false)} style={{ backgroundColor: 'red' }}>Volver</button>
-            <button onClick={handleModalClose} style={{ backgroundColor: 'green' }}>Eliminar</button>
+            <button onClick={handleDeleteClick} style={{ backgroundColor: 'green' }}>Eliminar</button>
           </div>
         </div>
       </div>
