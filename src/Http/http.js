@@ -120,3 +120,18 @@ export const borrarArticulo = async (code) => {
     throw error;
   }
 };
+
+
+/*
+router.get("/GetArticulosByCantidad", GetArticulosByCantidadController)
+router.get("/GetArticulosByName", GetArticulosByNameController)
+router.get("/GetArticulosByCode",GetArticulosByCodeController)
+router.get("/GetClases", GetClasesController)
+router.post("/InsertArticulo", InsertArticuloController)
+router.post("/InsertClase", InsertClaseController)
+router.post("/InsertUsuario", InsertUsuarioController)
+router.post("/LoginCheck", LoginCheckController)
+router.put("/UpdateArticulo", UpdateArticuloController)
+router.delete("/BorrarArticulo", BorrarArticuloController)
+
+*/
