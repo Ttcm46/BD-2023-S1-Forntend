@@ -5,7 +5,7 @@ const baseURL = 'http://localhost:8000/api'; // Reemplaza con la URL base de tu 
 
 export const getArticulosByCantidad = async (amount) => {
   try {
-    const response = await axios.get(`${baseURL}/GetArticulosByCantidad`, {
+    const response = await axios.post(`${baseURL}/GetArticulosByCantidad`, {
       data: { amount },
     });
     return response.data.result;
@@ -15,10 +15,12 @@ export const getArticulosByCantidad = async (amount) => {
 };
 
 export const getArticulosByName = async (name) => {
+  console.log(name)
   try {
-    const response = await axios.get(`${baseURL}/GetArticulosByName`, {
+    const response = await axios.post(`${baseURL}/GetArticulosByName`, {
       data: { name },
     });
+    console.log(response)
     return response.data.result;
   } catch (error) {
     throw error;
@@ -27,7 +29,7 @@ export const getArticulosByName = async (name) => {
 
 export const getArticulosByCode = async (code) => {
   try {
-    const response = await axios.get(`${baseURL}/GetArticulosByCode`, {
+    const response = await axios.post(`${baseURL}/GetArticulosByCode`, {
       data: { code },
     });
     return response.data.result;
@@ -47,6 +49,8 @@ export const getClases = async () => {
 };
 
 export const insertArticulo = async (name, price, code, clase) => {
+  clase="47"
+  console.log(name,price,code,clase)
   try {
     const response = await axios.post(`${baseURL}/InsertArticulo`, {
       name,

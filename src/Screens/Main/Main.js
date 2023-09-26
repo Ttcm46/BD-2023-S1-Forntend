@@ -21,7 +21,7 @@ function Main() {
   const handleFilterByName = async () => {
     try {
       const filteredData = await getArticulosByName(nombreFiltro);
-      setData(filteredData);
+      setData([{ Codigo: "Codigo", Nombre: "Nombre", idClaseArticulo: "Clase Articulo", Precio: "Precio" },...filteredData]);
     } catch (error) {
       console.error('Error al filtrar por nombre:', error);
     }
@@ -30,7 +30,7 @@ function Main() {
   const handleFilterByCantidad = async () => {
     try {
       const filteredData = await getArticulosByCantidad(cantidadFiltro);
-      setData(filteredData);
+      setData([{ Codigo: "Codigo", Nombre: "Nombre", idClaseArticulo: "Clase Articulo", Precio: "Precio" },...filteredData]);
     } catch (error) {
       console.error('Error al filtrar por cantidad:', error);
     }
@@ -39,7 +39,7 @@ function Main() {
   const handleFilterByClase = async () => {
     try {
       const filteredData = await getArticulosByCode(claseFiltro);
-      setData(filteredData);
+      setData([{ Codigo: "Codigo", Nombre: "Nombre", idClaseArticulo: "Clase Articulo", Precio: "Precio" },...filteredData]);
     } catch (error) {
       console.error('Error al filtrar por clase:', error);
     }
@@ -48,6 +48,17 @@ function Main() {
 
 
   useEffect(() => {
+    const getArticulo = async () => {
+      try {
+        const filteredData = await getArticulosByName("-1");
+        console.log(filteredData)
+
+        setData([{ Codigo: "Codigo", Nombre: "Nombre", idClaseArticulo: "Clase Articulo", Precio: "Precio" },...filteredData]);
+      } catch (error) {
+        console.error('Error al filtrar por clase:', error);
+      }
+    };
+    getArticulo()
   }, [isModalOpen]);
 
 
@@ -111,14 +122,14 @@ function Main() {
 
         </div>
       </div>
-
+      
       <div className="ProductList">
         {data.map((item, index) => (
           <div className="Product" key={index}>
-            <div className="ProductName">{item.code}</div>
-            <div className="ProductName">{item.name}</div>
-            <div className="ProductPrice">{item.clas}</div>
-            <div className="ProductName">${item.price}</div>
+            <div className="ProductName">{item.Codigo}</div>
+            <div className="ProductName">{item.Nombre}</div>
+            <div className="ProductPrice">{item.idClaseArticulo}</div>
+            <div className="ProductName">${item.Precio}</div>
           </div>
         ))}
       </div>

@@ -1,0 +1,8 @@
+Iniciar sesion 
+Insertar Usuarios
+Codigos de Error
+Codigos clase
+Insertar Class_name
+XML
+    Prioridad de datos:
+    Usuario,Clases de articulo,demas
