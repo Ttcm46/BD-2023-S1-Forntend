@@ -97,7 +97,7 @@ const Modificar = ({handleModalClose, clases }) => {
 
   const handleUpdateClick = async () => {
     try {
-      await updateArticulo("", name, price, code, clase);
+      await updateArticulo(code, name, price, code, clase);
       alert('Artículo modificado con éxito');
       handleModalClose()
     } catch (error) {
@@ -118,7 +118,7 @@ const Modificar = ({handleModalClose, clases }) => {
     !state ? (
       <div className="ModalOverlay">
         <div className="ModalContent">
-          <h2>Insertar Nuevo Producto</h2>
+          <h2>Modificar Producto</h2>
           <p>Código:</p>
           <input
             type="text"
