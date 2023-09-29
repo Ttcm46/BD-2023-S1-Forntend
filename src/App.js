@@ -5,10 +5,11 @@ import Main from './Screens/Main/Main';
 import Login from './Screens/Login/Login';
 
 function App() {
-  const [auth, setAuth] = useState(false)
+  const [auth, setAuth] = useState(true)
+
   return(
     !auth?(
-      <Main/>
+      <Login auth = {setAuth} />
     ): (
       <Main/>
     )

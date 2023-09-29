@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
-import { getArticulosByCantidad, getArticulosByCode, getArticulosByName } from '../../Http/http';
+import { getArticulosByCantidad, getArticulosByCode, getArticulosByName, getClases, getArticulosByClass } from '../../Http/http';
 import './Main.css';
 import ModalForm from '../CrudForm/CrudForm';
 
@@ -10,11 +10,12 @@ function Main() {
   const [data, setData] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [classOptions, setClassOptions] = useState(['Opción 1', 'Opción 2', 'Opción 3'])
+  const [classOptions, setClassOptions] = useState([])
+  const [classIds, setClassIds] = useState([])
 
   const [nombreFiltro, setNombreFiltro] = useState('');
   const [cantidadFiltro, setCantidadFiltro] = useState('');
-  const [claseFiltro, setClaseFiltro] = useState('');
+  const [claseFiltro, setClaseFiltro] = useState(0);
 
   const [modalType, setModalType] = useState(0)
 
@@ -38,8 +39,30 @@ function Main() {
   
   const handleFilterByClase = async () => {
     try {
-      const filteredData = await getArticulosByCode(claseFiltro);
-      setData([{ Codigo: "Codigo", Nombre: "Nombre", idClaseArticulo: "Clase Articulo", Precio: "Precio" },...filteredData]);
+      console.log("Todas clases", classOptions)
+      for(let i = 0; i < classOptions.length; i++){
+        if(claseFiltro === classOptions[i]){
+          const filteredData = await getArticulosByClass(classIds[i]);
+          console.log("Id clase:", classIds[i])
+          setData([{ Codigo: "Codigo", Nombre: "Nombre", idClaseArticulo: "Clase Articulo", Precio: "Precio" },...filteredData]);
+        }
+      }
+    } catch (error) {
+      console.error('Error al filtrar por clase:', error);
+    }
+  };
+  
+  const getAllClases = async () => {
+    try {
+      const clases = await getClases();
+      const clasesNames = []
+      const clasesIds = []
+      for(let i = 0; i < clases[0].length; i++){
+        clasesNames.push(clases[0][i].Nombre)
+        clasesIds.push(clases[0][i].id)
+      }
+      setClassOptions(clasesNames)
+      setClassIds(clasesIds)
     } catch (error) {
       console.error('Error al filtrar por clase:', error);
     }
@@ -48,6 +71,7 @@ function Main() {
 
 
   useEffect(() => {
+    getAllClases()
     const getArticulo = async () => {
       try {
         const filteredData = await getArticulosByName("-1");
@@ -102,7 +126,7 @@ function Main() {
           <div className="FilterButtons">
           <button onClick={handleFilterByName}>Filtrar por nombre</button>
           <button onClick={handleFilterByCantidad}>Filtrar por cantidad</button>
-          <button onClick={handleFilterByClase}>Filtrar por clase</button>
+          <button onClick={() => handleFilterByClase()}>Filtrar por clase</button>
           </div>
         </div>
     
@@ -124,6 +148,7 @@ function Main() {
       </div>
       
       <div className="ProductList">
+        
         {data.map((item, index) => (
           <div className="Product" key={index}>
             <div className="ProductName">{item.Codigo}</div>
@@ -136,7 +161,7 @@ function Main() {
 
       {/* Modal */}
       {isModalOpen && (
-        <ModalForm _type = {modalType} handleModalClose={handleModalClose} />
+        <ModalForm _type = {modalType} handleModalClose={handleModalClose} clases={classOptions} />
       )}
     </div>
   );

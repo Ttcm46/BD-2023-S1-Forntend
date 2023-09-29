@@ -3,46 +3,39 @@ import { insertArticulo, getClases, updateArticulo, getArticulosByCode, borrarAr
 
 import './CrudForm.css'
 
-const ModalForm = ({ _type, handleModalClose }) => {
+const ModalForm = ({ _type, handleModalClose, clases }) => {
   if (_type === 1) {
     return (
       <Insertar
         handleModalClose={handleModalClose}
+        clases={clases}
       />
     );
   } else if (_type === 2) {
     return (
       <Modificar
         handleModalClose={handleModalClose}
+        clases={clases}
       />
     );
   } else if (_type === 3) {
     return (
       <Eliminar
         handleModalClose={handleModalClose}
+        clases={clases}
       />
     );
   }
 };
 
-const Insertar = ({ handleModalClose }) => {
+const Insertar = ({ handleModalClose, clases }) => {
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [clase, setClase] = useState('');
   const [price, setPrice] = useState('');
-  const [clasesList, setClasesList] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [clasesList, setClasesList] = useState(clases);
 
   useEffect(() => {
-    getClases()
-      .then((clases) => {
-        setClasesList(clases);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error al obtener clases:', error);
-        setIsLoading(false);
-      });
   }, []);
 
   const handleInsertClick = async () => {
@@ -65,18 +58,14 @@ const Insertar = ({ handleModalClose }) => {
         <p>Nombre:</p>
         <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
         <p>Clase:</p>
-        {isLoading ? (
-          <p>Cargando clases...</p>
-        ) : (
-          <select value={clase} onChange={(e) => setClase(e.target.value)}>
+        <select value={clase} onChange={(e) => setClase(e.target.value)}>
             <option value="">Seleccionar Clase</option>
             {clasesList.map((claseItem) => (
-              <option key={claseItem.id} value={claseItem.nombre}>
-                {claseItem.nombre}
+              <option value={claseItem.nombre}>
+                {claseItem}
               </option>
             ))}
-          </select>
-        )}
+        </select>
         <br />
         <p>Precio:</p>
         <input type="text" value={price} onChange={(e) => setPrice(e.target.value)} />
@@ -95,25 +84,15 @@ const Insertar = ({ handleModalClose }) => {
 };
 
 
-const Modificar = ({handleModalClose }) => {
+const Modificar = ({handleModalClose, clases }) => {
   const [state, setState] = useState(false);
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [clase, setClase] = useState('');
   const [price, setPrice] = useState('');
-  const [clasesList, setClasesList] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [clasesList, setClasesList] = useState(clases);
 
   useEffect(() => {
-    getClases()
-      .then((clases) => {
-        setClasesList(clases);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error al obtener clases:', error);
-        setIsLoading(false);
-      });
   }, []);
 
   const handleUpdateClick = async () => {
@@ -170,18 +149,15 @@ const Modificar = ({handleModalClose }) => {
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
-          {isLoading ? (
-          <p>Cargando clases...</p>
-          ) : (
-            <select value={clase} onChange={(e) => setClase(e.target.value)}>
-              <option value="">Seleccionar Clase</option>
-              {clasesList.map((claseItem) => (
-                <option key={claseItem.id} value={claseItem.nombre}>
-                  {claseItem.nombre}
-                </option>
-              ))}
-            </select>
-          )}
+          <p>Clases:</p>
+          <select value={clase} onChange={(e) => setClase(e.target.value)}>
+            <option value="">Seleccionar Clase</option>
+            {clasesList.map((claseItem) => (
+              <option value={claseItem.nombre}>
+                {claseItem}
+              </option>
+            ))}
+        </select>
           <br />
           <p>Precio:</p>
           <input
@@ -203,7 +179,10 @@ const Modificar = ({handleModalClose }) => {
 const Eliminar = ({ _code, handleModalClose }) => {
   const [state, setState] = useState(false);
   const [code, setCode] = useState('');
-  const [articulo, setArticulo] = useState({})
+
+  const [nombre, setNombre] = useState('');
+  const [precio, setPrecio] = useState(0);
+  const [clase, setClase] = useState('');
 
   const handleDeleteClick = async () => {
     try {
@@ -218,7 +197,10 @@ const Eliminar = ({ _code, handleModalClose }) => {
   const handleVerifyClick = async () => {
     try {
       const response = await getArticulosByCode(code);
-      setArticulo(response)
+      console.log("ESTE",response[0])
+      setNombre(response[0].Nombre)
+      setClase(response[0].Codigo)
+      setPrecio(response[0].Precio)
       setState(true)
     } catch (error) {
       alert('Artículo no encontrado');
@@ -246,9 +228,10 @@ const Eliminar = ({ _code, handleModalClose }) => {
     ) : (
       <div className="ModalOverlay">
         <div className="ModalContent">
-          <h2>Producto Eliminado</h2>
+          <h2>Nombre: {nombre}</h2>
+          <h2>Codigo: {clase}</h2>
+          <h2>Precio: {precio}</h2>
           <br />
-          <p>{articulo}</p>
           <div className="ModalButtons">
             <button onClick={() => setState(false)} style={{ backgroundColor: 'red' }}>Volver</button>
             <button onClick={handleDeleteClick} style={{ backgroundColor: 'green' }}>Eliminar</button>

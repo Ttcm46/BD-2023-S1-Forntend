@@ -2,39 +2,54 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './Login.css';
 
-const Login = ({ next }) => {
+const Login = ({ auth }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
+  const [state, setState] = useState(false)
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const response = await axios.post('URL_DEL_ENDPOINT', {
+    if(state){
+      const response = await axios.post('http://localhost:8000/api/LoginCheck', {
         username,
         password,
       });
-
-      if (response.status === 200) {
+      console.log(response.data.result)
+      if (response.data.result === true) {
         setSuccessMessage('Inicio de sesión exitoso.');
+        alert('Inicio de sesión exitoso.')
         setErrorMessage('');
-        next();
+        auth(true);
       } else {
         setErrorMessage('Inicio de sesión fallido.');
         setSuccessMessage('');
       }
-    } catch (error) {
-      setErrorMessage('Hubo un error al iniciar sesión.');
-      setSuccessMessage('');
+
+    } else {
+      const response = await axios.post('http://localhost:8000/api/InsertUsuario', {
+        username,
+        password,
+      });
+      if (response.data.result === true) {
+        setSuccessMessage('Registro exitoso.');
+        alert('Registro exitoso.')
+        setErrorMessage('');
+        auth(true);
+      } else {
+        setErrorMessage('Registro fallido.');
+        setSuccessMessage('');
+      }
     }
   };
 
   return (
     <div className="login-container">
       <div className="login-box">
-        <h2>Iniciar Sesión</h2>
+        <h2>{state? "Iniciar Sesión":"Registrarse"}</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <input
@@ -42,7 +57,7 @@ const Login = ({ next }) => {
               type="text"
               id="username"
               name="username"
-              placeholder="Correo electrónico o número de teléfono"
+              placeholder="Nombre de usuario"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -60,7 +75,8 @@ const Login = ({ next }) => {
               required
             />
           </div>
-          <button className="form-button" type="submit">Iniciar Sesión</button>
+          <button className="form-button" type="submit">{state? "Iniciar Sesión":"Registrarse"}</button>
+          <p onClick={() => setState(!state)} >{state? "No tienes cuenta? Registrarse":"Ya tienes cuenta? Iniciar Sesión"}</p>
         </form>
         {successMessage && <div className="success">{successMessage}</div>}
         {errorMessage && <div className="error">{errorMessage}</div>}
