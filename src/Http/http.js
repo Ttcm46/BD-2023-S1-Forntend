@@ -15,10 +15,12 @@ export const getArticulosByCantidad = async (amount) => {
 };
 
 export const getArticulosByName = async (name) => {
+  console.log(name)
   try {
     const response = await axios.post(`${baseURL}/GetArticulosByName`, {
       data: { name },
     });
+    console.log(response)
     return response.data.result;
   } catch (error) {
     throw error;
@@ -29,17 +31,6 @@ export const getArticulosByCode = async (code) => {
   try {
     const response = await axios.post(`${baseURL}/GetArticulosByCode`, {
       data: { code },
-    });
-    return response.data.result;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const getArticulosByClass = async (clas) => {
-  try {
-    const response = await axios.post(`${baseURL}/GetArticulosByClase `, {
-      data: { code:clas },
     });
     return response.data.result;
   } catch (error) {
@@ -59,6 +50,7 @@ export const getClases = async () => {
 
 export const insertArticulo = async (name, price, code, clase) => {
   clase="47"
+  console.log(name,price,code,clase)
   try {
     const response = await axios.post(`${baseURL}/InsertArticulo`, {
       name,
@@ -109,7 +101,6 @@ export const loginCheck = async (userName, password) => {
 
 export const updateArticulo = async (target, name, price, code, clase) => {
   try {
-    console.log(target)
     const response = await axios.put(`${baseURL}/UpdateArticulo`, {
       target,
       name,
