@@ -6,7 +6,7 @@ import Login from './Screens/Login/Login';
 import { guardarXML } from './XML/xml';
 
 function App() {
-  const [auth, setAuth] = useState(true)
+  const [auth, setAuth] = useState(false)
   useEffect(() => {
   },[])
   return(
