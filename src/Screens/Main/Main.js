@@ -19,6 +19,71 @@ function Main() {
 
   const [modalType, setModalType] = useState(0)
 
+  const [xmlData, setXmlData] = useState(null);
+  const [parsedData, setParsedData] = useState(null);
+
+  function cargarXML(xmlString) {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+  
+    const usuarios = [];
+    const usuariosXML = xmlDoc.querySelectorAll("Usuarios usuario");
+    usuariosXML.forEach((usuarioXML) => {
+      const usuario = {
+        Nombre: usuarioXML.getAttribute("Nombre"),
+        Password: usuarioXML.getAttribute("Password")
+      };
+      usuarios.push(usuario);
+    });
+    console.log(usuarios);
+
+    const clasesDeArticulos = [];
+    const clasesDeArticulosXML = xmlDoc.querySelectorAll("ClasesdeArticulos ClasedeArticulos");
+    clasesDeArticulosXML.forEach((claseXML) => {
+      const claseDeArticulo = {
+        Nombre: claseXML.getAttribute("Nombre")
+      };
+      clasesDeArticulos.push(claseDeArticulo);
+    });
+    console.log(clasesDeArticulosXML);
+
+    const articulos = [];
+    const articulosXML = xmlDoc.querySelectorAll("Articulos Articulo");
+    articulosXML.forEach((articuloXML) => {
+      const articulo = {
+        Codigo: articuloXML.getAttribute("Codigo"),
+        Nombre: articuloXML.getAttribute("Nombre"),
+        ClasedeArticulo: articuloXML.getAttribute("ClasedeArticulo"),
+        Precio: parseFloat(articuloXML.getAttribute("Precio")) // Convertir a número
+      };
+      articulos.push(articulo);
+    });
+    console.log(articulosXML);
+
+  
+    // Devuelve los datos en un objeto
+    return {
+      Usuarios: usuarios,
+      ClasesDeArticulos: clasesDeArticulos,
+      Articulos: articulos
+    };
+  }
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const xmlString = e.target.result;
+        const parsedData = cargarXML(xmlString);
+        console.log("data",parsedData)
+        setXmlData(xmlString);
+        setParsedData(parsedData);
+      };
+      reader.readAsText(file);
+    }
+  };
+
   const handleFilterByName = async () => {
     try {
       const filteredData = await getArticulosByName(nombreFiltro);
@@ -71,7 +136,7 @@ function Main() {
 
 
   useEffect(() => {
-    getAllClases()
+    //getAllClases()
     const getArticulo = async () => {
       try {
         const filteredData = await getArticulosByName("-1");
@@ -82,7 +147,7 @@ function Main() {
         console.error('Error al filtrar por clase:', error);
       }
     };
-    getArticulo()
+    //getArticulo()
   }, [isModalOpen]);
 
 
@@ -127,6 +192,7 @@ function Main() {
           <button onClick={handleFilterByName}>Filtrar por nombre</button>
           <button onClick={handleFilterByCantidad}>Filtrar por cantidad</button>
           <button onClick={() => handleFilterByClase()}>Filtrar por clase</button>
+          <input type="file" onChange={handleFileChange} accept=".xml" />
           </div>
         </div>
     
