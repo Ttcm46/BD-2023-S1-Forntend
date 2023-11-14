@@ -1,159 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'
-import { getArticulosByCantidad, getArticulosByCode, getArticulosByName, getClases, getArticulosByClass } from '../../Http/http';
+import { getArticulosByCantidad, getArticulosByCode, getArticulosByName, getClases, getArticulosByClass, listarEmpleados } from '../../Http/http';
 import './Main.css';
 import ModalForm from '../CrudForm/CrudForm';
+import { cargarXML } from '../../XML/xml';
 
 const url = 'http://localhost:8000/api';
 
-function Main() {
-  const [data, setData] = useState([])
+function Main({setEmployee}) {
+  const [filterParam, setFilterParam] = useState("")
+  const [data, setData] = useState([
+    { Name: "Nombre", TypeId: "Tipo ID", Value: "Valor", BirthDate: "Fecha de Nacimiento", Position: "Puesto", Department: "Departamento" },
+    { Name: "Juan", TypeId: "DNI", Value: "12345678", BirthDate: "01/15/1990", Position: "Analista", Department: "IT" },
+  { Name: "María", TypeId: "Pasaporte", Value: "A123456", BirthDate: "05/22/1985", Position: "Gerente", Department: "Ventas" },
+  { Name: "Carlos", TypeId: "Carnet de Extranjería", Value: "B987654", BirthDate: "11/07/1982", Position: "Desarrollador", Department: "Desarrollo" }
+  ]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const [classOptions, setClassOptions] = useState([])
-  const [classIds, setClassIds] = useState([])
-
-  const [nombreFiltro, setNombreFiltro] = useState('');
-  const [cantidadFiltro, setCantidadFiltro] = useState('');
-  const [claseFiltro, setClaseFiltro] = useState(0);
-
   const [modalType, setModalType] = useState(0)
-
-  const [xmlData, setXmlData] = useState(null);
-  const [parsedData, setParsedData] = useState(null);
-
-  function cargarXML(xmlString) {
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xmlString, "text/xml");
-  
-    const usuarios = [];
-    const usuariosXML = xmlDoc.querySelectorAll("Usuarios usuario");
-    usuariosXML.forEach((usuarioXML) => {
-      const usuario = {
-        Nombre: usuarioXML.getAttribute("Nombre"),
-        Password: usuarioXML.getAttribute("Password")
-      };
-      usuarios.push(usuario);
-    });
-    console.log(usuarios);
-
-    const clasesDeArticulos = [];
-    const clasesDeArticulosXML = xmlDoc.querySelectorAll("ClasesdeArticulos ClasedeArticulos");
-    clasesDeArticulosXML.forEach((claseXML) => {
-      const claseDeArticulo = {
-        Nombre: claseXML.getAttribute("Nombre")
-      };
-      clasesDeArticulos.push(claseDeArticulo);
-    });
-    console.log(clasesDeArticulosXML);
-
-    const articulos = [];
-    const articulosXML = xmlDoc.querySelectorAll("Articulos Articulo");
-    articulosXML.forEach((articuloXML) => {
-      const articulo = {
-        Codigo: articuloXML.getAttribute("Codigo"),
-        Nombre: articuloXML.getAttribute("Nombre"),
-        ClasedeArticulo: articuloXML.getAttribute("ClasedeArticulo"),
-        Precio: parseFloat(articuloXML.getAttribute("Precio")) // Convertir a número
-      };
-      articulos.push(articulo);
-    });
-    console.log(articulosXML);
-
-  
-    // Devuelve los datos en un objeto
-    return {
-      Usuarios: usuarios,
-      ClasesDeArticulos: clasesDeArticulos,
-      Articulos: articulos
-    };
-  }
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const xmlString = e.target.result;
-        const parsedData = cargarXML(xmlString);
-        console.log("data",parsedData)
-        setXmlData(xmlString);
-        setParsedData(parsedData);
-      };
-      reader.readAsText(file);
-    }
-  };
-
-  const handleFilterByName = async () => {
-    try {
-      const filteredData = await getArticulosByName(nombreFiltro);
-      setData([{ Codigo: "Codigo", Nombre: "Nombre", idClaseArticulo: "Clase Articulo", Precio: "Precio" },...filteredData]);
-    } catch (error) {
-      console.error('Error al filtrar por nombre:', error);
-    }
-  };
-  
-  const handleFilterByCantidad = async () => {
-    try {
-      const filteredData = await getArticulosByCantidad(cantidadFiltro);
-      setData([{ Codigo: "Codigo", Nombre: "Nombre", idClaseArticulo: "Clase Articulo", Precio: "Precio" },...filteredData]);
-    } catch (error) {
-      console.error('Error al filtrar por cantidad:', error);
-    }
-  };
-  
-  const handleFilterByClase = async () => {
-    try {
-      console.log("Todas clases", classOptions)
-      for(let i = 0; i < classOptions.length; i++){
-        if(claseFiltro === classOptions[i]){
-          const filteredData = await getArticulosByClass(classIds[i]);
-          console.log("Id clase:", classIds[i])
-          setData([{ Codigo: "Codigo", Nombre: "Nombre", idClaseArticulo: "Clase Articulo", Precio: "Precio" },...filteredData]);
-        }
-      }
-    } catch (error) {
-      console.error('Error al filtrar por clase:', error);
-    }
-  };
-  
-  const getAllClases = async () => {
-    try {
-      const clases = await getClases();
-      const clasesNames = []
-      const clasesIds = []
-      for(let i = 0; i < clases[0].length; i++){
-        clasesNames.push(clases[0][i].Nombre)
-        clasesIds.push(clases[0][i].id)
-      }
-      setClassOptions(clasesNames)
-      setClassIds(clasesIds)
-    } catch (error) {
-      console.error('Error al filtrar por clase:', error);
-    }
-  };
-  
+  const [nameEmployee, setNameEmployee] = useState("")
+  const [valueEmployee, setValueEmployee] = useState("")
 
 
-  useEffect(() => {
-    //getAllClases()
-    const getArticulo = async () => {
-      try {
-        const filteredData = await getArticulosByName("-1");
-        console.log(filteredData)
-
-        setData([{ Codigo: "Codigo", Nombre: "Nombre", idClaseArticulo: "Clase Articulo", Precio: "Precio" },...filteredData]);
-      } catch (error) {
-        console.error('Error al filtrar por clase:', error);
-      }
-    };
-    //getArticulo()
-  }, [isModalOpen]);
-
-
-  const handleInsertClick = () => {
+  const handleMenuClick = (name, value) => {
+    setNameEmployee(name);
+    setValueEmployee(value);
+    setModalType(0)
     setIsModalOpen(true);
   };
+
+  const handleInsertClick = () => {
+    setModalType(1)
+    setIsModalOpen(true);
+  };
+
+
+  const handleFilter = async () => {
+    console.log(filterParam)
+    if (filterParam.length > 0) {
+      console.log(listarEmpleados("", filterParam))
+    } else {
+      console.log(listarEmpleados("", -1))
+    }
+  };
+
+  useEffect(() => {
+    //getArticulo()
+    console.log(listarEmpleados("", filterParam))
+  }, [isModalOpen]);
+
 
   const handleModalClose = () => {
     setIsModalOpen(false);
@@ -162,72 +56,46 @@ function Main() {
 
   return (
     <div className="App">
-      <h2>Lista de Articulos</h2>
+      <h2>Administrador</h2>
       <div className='Header'>
         <div className="FilterDiv">
           <div className="FilterForm">
           <input
             type="text"
-            placeholder="Nombre"
-            value={nombreFiltro}
-            onChange={(e) => setNombreFiltro(e.target.value)}
+            placeholder="Filtro"
+            value={filterParam}
+            onChange={(e) => setFilterParam(e.target.value)}
           />
-          <input
-            type="text"
-            placeholder="Cantidad"
-            value={cantidadFiltro}
-            onChange={(e) => setCantidadFiltro(e.target.value)}
-          />
-          <select value={claseFiltro} onChange={(e) => setClaseFiltro(e.target.value)}>
-            <option value="">Seleccionar Clase</option>
-            {classOptions.map((opcion, index) => (
-              <option key={index} value={opcion}>
-                {opcion}
-              </option>
-            ))}
-          </select>
 
           </div>
           <div className="FilterButtons">
-          <button onClick={handleFilterByName}>Filtrar por nombre</button>
-          <button onClick={handleFilterByCantidad}>Filtrar por cantidad</button>
-          <button onClick={() => handleFilterByClase()}>Filtrar por clase</button>
-          <input type="file" onChange={handleFileChange} accept=".xml" />
+          <button onClick={handleFilter}>Filtrar</button>
           </div>
         </div>
-    
-        <div className="CrudButtons">
-          <button onClick={() => {  
-            setModalType(1)
-            setIsModalOpen(true)
-          }}>Insertar Articulo</button>
-          <button onClick={() => {
-            setModalType(2)
-            setIsModalOpen(true)
-          }}>Actualizar Articulo</button>
-          <button onClick={() => {
-            setModalType(3)
-            setIsModalOpen(true)
-          }}>Eliminar Articulo</button>
-
-        </div>
       </div>
-      
+      <button style={{backgroundColor:'green', height:'40px', width:'120px', color:'white', marginLeft:'5%', borderRadius:'5px', border:'none', fontWeight:'bold'}} 
+      onClick={() => handleInsertClick()}>Insertar</button>
       <div className="ProductList">
-        
         {data.map((item, index) => (
-          <div className="Product" key={index}>
-            <div className="ProductName">{item.Codigo}</div>
-            <div className="ProductName">{item.Nombre}</div>
-            <div className="ProductPrice">{item.idClaseArticulo}</div>
-            <div className="ProductName">${item.Precio}</div>
+          <div className="Product" key={index} onClick={() => {
+            handleMenuClick(item.Name, item.Value);
+            setEmployee(item)
+            }}>
+            <div className="ProductName">{item.Name}</div>
+            <div className="ProductName">{item.TypeId}</div>
+            <div className="ProductName">{item.Value}</div>
+            <div className="ProductName">{item.BirthDate}</div>
+            <div className="ProductName">{item.Position}</div>
+            <div className="ProductName">{item.Department}</div>
           </div>
         ))}
+        
       </div>
+      
 
       {/* Modal */}
       {isModalOpen && (
-        <ModalForm _type = {modalType} handleModalClose={handleModalClose} clases={classOptions} />
+        <ModalForm nameEmployee={nameEmployee} valueEmployee={valueEmployee} handleModalClose={handleModalClose} _type={modalType} />
       )}
     </div>
   );

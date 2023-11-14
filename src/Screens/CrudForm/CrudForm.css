@@ -19,6 +19,55 @@
    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
    min-width: 250px;
  }
+
+ .ModalOverlayMenu {
+  position: fixed; /* Fija el modal en la ventana */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo oscurecido */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100; /* Coloca el modal encima del contenido */
+  
+}
+
+.ModalContentMenu {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  min-width: 250px;
+}
+
+.ModalContentMenuOptions {
+  background-color: white;
+  min-width: 250px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.ModalContentMenuOptions button {
+  margin: 20px;
+  padding:10px;
+  border-radius: 5px;
+  border:0;
+  color:white;
+  height: 50px;
+  align-content: center;
+  font-weight: bold
+}
+
+.ModalContentMenu h5 {
+  margin:0;
+}
+
+.ModalContentMenu h5:hover, .ModalContentMenuOptions button:hover {
+  cursor:pointer;
+}
  
  .ModalButtons {
    margin-top: 10px;
@@ -39,3 +88,30 @@
  input {
    outline:none;
  }
+
+ .ModalContent div {
+  display: flex;
+  flex-direction: column;
+  width:100%;
+  height:100%;
+ }
+
+ .ModalContent div {
+  width: 80%;
+  margin:0 auto;
+  margin-top: 5px;
+ }
+
+ .ModalContent div input {
+  border-radius: 3px;
+  min-height: 20px;
+  border: 1px solid black;
+ }
+ .ModalContent div button {
+  width:50%;
+  margin: 0 auto;
+  margin-top: 10px;
+  min-height: 30px;
+  border-radius: 5px;
+  border:1px solid black;
+}

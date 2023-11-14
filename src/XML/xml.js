@@ -1,49 +1,50 @@
-// Define una función para cargar y analizar el XML
-function cargarXML(xmlString) {
-   const parser = new DOMParser();
-   const xmlDoc = parser.parseFromString(xmlString, "text/xml");
-   
-   // Extrae usuarios
-   const usuarios = [];
-   const usuariosXML = xmlDoc.getElementsByTagName("usuario");
-   for (let i = 0; i < usuariosXML.length; i++) {
-     const usuario = {
-       Nombre: usuariosXML[i].getAttribute("Nombre"),
-       Password: usuariosXML[i].getAttribute("Password")
-     };
-     usuarios.push(usuario);
-   }
- 
-   // Extrae clases de artículos
-   const clasesDeArticulos = [];
-   const clasesDeArticulosXML = xmlDoc.getElementsByTagName("ClasesdeArticulos");
-   for (let i = 0; i < clasesDeArticulosXML.length; i++) {
-     const clase = {
-       Nombre: clasesDeArticulosXML[i].getAttribute("Nombre")
-     };
-     clasesDeArticulos.push(clase);
-   }
- 
-   // Extrae artículos
-   const articulos = [];
-   const articulosXML = xmlDoc.getElementsByTagName("Articulo");
-   for (let i = 0; i < articulosXML.length; i++) {
-     const articulo = {
-       Codigo: articulosXML[i].getAttribute("Codigo"),
-       Nombre: articulosXML[i].getAttribute("Nombre"),
-       ClaseDeArticulo: articulosXML[i].getAttribute("ClasedeArticulo"),
-       Precio: parseFloat(articulosXML[i].getAttribute("Precio"))
-     };
-     articulos.push(articulo);
-   }
- 
-   // Devuelve los datos en un objeto
-   return {
-     Usuarios: usuarios,
-     ClasesDeArticulos: clasesDeArticulos,
-     Articulos: articulos
-   };
- }
+export function cargarXML(xmlString) {
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+
+  const usuarios = [];
+  const usuariosXML = xmlDoc.querySelectorAll("Usuarios usuario");
+  usuariosXML.forEach((usuarioXML) => {
+    const usuario = {
+      Nombre: usuarioXML.getAttribute("Nombre"),
+      Password: usuarioXML.getAttribute("Password")
+    };
+    usuarios.push(usuario);
+  });
+  console.log(usuarios);
+
+  const clasesDeArticulos = [];
+  const clasesDeArticulosXML = xmlDoc.querySelectorAll("ClasesdeArticulos ClasedeArticulos");
+  clasesDeArticulosXML.forEach((claseXML) => {
+    const claseDeArticulo = {
+      Nombre: claseXML.getAttribute("Nombre")
+    };
+    clasesDeArticulos.push(claseDeArticulo);
+  });
+  console.log(clasesDeArticulosXML);
+
+  const articulos = [];
+  const articulosXML = xmlDoc.querySelectorAll("Articulos Articulo");
+  articulosXML.forEach((articuloXML) => {
+    const articulo = {
+      Codigo: articuloXML.getAttribute("Codigo"),
+      Nombre: articuloXML.getAttribute("Nombre"),
+      ClasedeArticulo: articuloXML.getAttribute("ClasedeArticulo"),
+      Precio: parseFloat(articuloXML.getAttribute("Precio")) // Convertir a número
+    };
+    articulos.push(articulo);
+  });
+  console.log(articulosXML);
+
+
+  // Devuelve los datos en un objeto
+  return {
+    Usuarios: usuarios,
+    ClasesDeArticulos: clasesDeArticulos,
+    Articulos: articulos
+  };
+}
+
  
 export function guardarXML(){
    // Crea un objeto XMLHttpRequest para cargar el archivo XML

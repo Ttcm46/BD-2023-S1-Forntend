@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
 const Login = ({ auth }) => {
@@ -9,9 +10,12 @@ const Login = ({ auth }) => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const [state, setState] = useState(false)
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    navigate('/main');
+
 
     if(state){
       const response = await axios.post('http://localhost:8000/api/LoginCheck', {
@@ -75,7 +79,7 @@ const Login = ({ auth }) => {
               required
             />
           </div>
-          <button className="form-button" type="submit">{state? "Iniciar Sesión":"Registrarse"}</button>
+          <button onClick={()=>navigate('/main')} className="form-button" type="submit">{state? "Iniciar Sesión":"Registrarse"}</button>
           <p onClick={() => setState(!state)} >{state? "No tienes cuenta? Registrarse":"Ya tienes cuenta? Iniciar Sesión"}</p>
         </form>
         {successMessage && <div className="success">{successMessage}</div>}

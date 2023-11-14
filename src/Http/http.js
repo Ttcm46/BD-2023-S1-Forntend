@@ -2,103 +2,10 @@ import axios from 'axios';
 
 const baseURL = 'http://localhost:8000/api'; // Reemplaza con la URL base de tu API
 
-
-export const getArticulosByCantidad = async (amount) => {
-  try {
-    const response = await axios.post(`${baseURL}/GetArticulosByCantidad`, {
-      data: { amount },
-    });
-    return response.data.result;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const getArticulosByName = async (name) => {
-  try {
-    const response = await axios.post(`${baseURL}/GetArticulosByName`, {
-      data: { name },
-    });
-    return response.data.result;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const getArticulosByCode = async (code) => {
-  try {
-    const response = await axios.post(`${baseURL}/GetArticulosByCode`, {
-      data: { code },
-    });
-    return response.data.result;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const getArticulosByClass = async (clas) => {
-  try {
-    const response = await axios.post(`${baseURL}/GetArticulosByClase `, {
-      data: { code:clas },
-    });
-    return response.data.result;
-  } catch (error) {
-    throw error;
-  }
-};
-
-
-export const getClases = async () => {
-  try {
-    const response = await axios.get(`${baseURL}/GetClases`);
-    return response.data.result;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const insertArticulo = async (name, price, code, clase) => {
-  clase="47"
-  try {
-    const response = await axios.post(`${baseURL}/InsertArticulo`, {
-      name,
-      price,
-      code,
-      clase,
-    });
-    return response.data.result;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const insertClase = async (class_name) => {
-  try {
-    const response = await axios.post(`${baseURL}/InsertClase`, {
-      Class_name: class_name,
-    });
-    return response.data.result;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const insertUsuario = async (userName, password) => {
-  try {
-    const response = await axios.post(`${baseURL}/InsertUsuario`, {
-      UserName: userName,
-      Password: password,
-    });
-    return response.data.result;
-  } catch (error) {
-    throw error;
-  }
-};
-
 export const loginCheck = async (userName, password) => {
   try {
-    const response = await axios.post(`${baseURL}/LoginCheck`, {
-      UserName: userName,
+    const response = await axios.post(`${baseURL}/Login`, {
+      Username: userName,
       Password: password,
     });
     return response.data.result;
@@ -107,15 +14,10 @@ export const loginCheck = async (userName, password) => {
   }
 };
 
-export const updateArticulo = async (target, name, price, code, clase) => {
+export const logout = async (usuario) => {
   try {
-    console.log(target)
-    const response = await axios.put(`${baseURL}/UpdateArticulo`, {
-      target,
-      name,
-      price,
-      code,
-      clase,
+    const response = await axios.post(`${baseURL}/Logout`, {
+      Usuario: usuario,
     });
     return response.data.result;
   } catch (error) {
@@ -123,10 +25,11 @@ export const updateArticulo = async (target, name, price, code, clase) => {
   }
 };
 
-export const borrarArticulo = async (code) => {
+export const listarEmpleados = async (usuario, filtro = -1) => {
   try {
-    const response = await axios.delete(`${baseURL}/BorrarArticulo`, {
-      data: { code },
+    const response = await axios.post(`${baseURL}/ListarEmpleados`, {
+      Username: usuario,
+      Filtro:filtro
     });
     return response.data.result;
   } catch (error) {
@@ -135,16 +38,122 @@ export const borrarArticulo = async (code) => {
 };
 
 
-/*
-router.get("/GetArticulosByCantidad", GetArticulosByCantidadController)
-router.get("/GetArticulosByName", GetArticulosByNameController)
-router.get("/GetArticulosByCode",GetArticulosByCodeController)
-router.get("/GetClases", GetClasesController)
-router.post("/InsertArticulo", InsertArticuloController)
-router.post("/InsertClase", InsertClaseController)
-router.post("/InsertUsuario", InsertUsuarioController)
-router.post("/LoginCheck", LoginCheckController)
-router.put("/UpdateArticulo", UpdateArticuloController)
-router.delete("/BorrarArticulo", BorrarArticuloController)
+export const editarEmpleado = async (usuario, idObjetivo, nombreNuevo, tipoIdNuevo, valorId, fechaNacimiento, idPuesto, idDepartamento) => {
+  try {
+    const response = await axios.post(`${baseURL}/EditarEmpleado`, {
+      Usuario: usuario,
+      IdObjetivo: idObjetivo,
+      NombreNuevo: nombreNuevo,
+      TipoIdNuevo: tipoIdNuevo,
+      ValorID: valorId,
+      FechaNacimiento: fechaNacimiento,
+      IdPuesto: idPuesto,
+      IdDepartamento: idDepartamento,
+    });
+    return response.data.result;
+  } catch (error) {
+    throw error;
+  }
+};
 
-*/
+export const getPuestos = async () => {
+  try {
+    const response = await axios.get(`${baseURL}/GetPuestos`);
+    return response.data.result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getDepartamentos = async () => {
+  try {
+    const response = await axios.get(`${baseURL}/GetDepartamentos`);
+    return response.data.result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getIdentificaciones = async () => {
+  try {
+    const response = await axios.get(`${baseURL}/GetIdentificaciones`);
+    return response.data.result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const insertarEmpleado = async (usuario, nombre, tipoId, valorId, fechaNacimiento, idPuesto, idDepartamento) => {
+  try {
+    const response = await axios.post(`${baseURL}/InsertarEmpleado`, {
+      Usuario: usuario,
+      Nombre: nombre,
+      TipoId: tipoId,
+      ValorID: valorId,
+      FechaNacimiento: fechaNacimiento,
+      IdPuesto: idPuesto,
+      IdDepartamento: idDepartamento,
+    });
+    return response.data.result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const impersonar = async (usuario, idObjetivo) => {
+  try {
+    const response = await axios.post(`${baseURL}/Impersonar`, {
+      Usuario: usuario,
+      IDObjetivo: idObjetivo,
+    });
+    return response.data.result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const eliminarEmpleado = async (usuario, idEmpleadoAEliminar) => {
+  try {
+    const response = await axios.post(`${baseURL}/EliminarEmpleado`, {
+      Usuario: usuario,
+      IDEmpleadoAEliminar: idEmpleadoAEliminar,
+    });
+    return response.data.result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const planillaSemanal = async (usuario) => {
+  try {
+    const response = await axios.post(`${baseURL}/PlanillaSemanal`, {
+      Usuario: usuario,
+    });
+    return response.data.result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const planillaMensual = async (usuario) => {
+  try {
+    const response = await axios.post(`${baseURL}/PlanillaMensual`, {
+      Usuario: usuario,
+    });
+    return response.data.result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const dejarImpersonar = async (usuario, idUsuarioEmpersonado) => {
+  try {
+    const response = await axios.post(`${baseURL}/DejarImpersonar`, {
+      Usuario: usuario,
+      IdUsuarioEmpersonado: idUsuarioEmpersonado,
+    });
+    return response.data.result;
+  } catch (error) {
+    throw error;
+  }
+};
