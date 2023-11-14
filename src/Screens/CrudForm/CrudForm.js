@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { insertArticulo, getClases, updateArticulo, getArticulosByCode, borrarArticulo, eliminarEmpleado, insertarEmpleado, editarEmpleado } from '../../Http/http';
+import { insertArticulo, getClases, updateArticulo, getArticulosByCode, borrarArticulo, eliminarEmpleado, insertarEmpleado, editarEmpleado, impersonar } from '../../Http/http';
 
 import './CrudForm.css'
 import { useNavigate } from 'react-router-dom';
+import Employee from '../Employee/Employee';
 
-const ModalForm = ({ handleModalClose, nameEmployee, valueEmployee, _type }) => {
+const ModalForm = ({ handleModalClose, _type, employee,setEmployee }) => {
   const [type, setType] = useState(_type)
   const deleteEmployee = () => {
     const result = window.confirm('¿Desea eliminar este usuario?');
     if (result) {
       // Código a ejecutar si el usuario hace clic en "Sí"
       alert('Acción confirmada');
-      console.log(eliminarEmpleado(nameEmployee, valueEmployee))
+      console.log(eliminarEmpleado(employee.Nombre, employee.id))
       handleModalClose()
     } else {
       // Código a ejecutar si el usuario hace clic en "Cancelar"
@@ -24,11 +25,14 @@ const ModalForm = ({ handleModalClose, nameEmployee, valueEmployee, _type }) => 
     return(
       <div className="ModalOverlayMenu">
         <div className="ModalContentMenu">
-          <h4>Nombre: {nameEmployee} {valueEmployee} </h4>
+          <h4>Nombre: {employee.Nombre} { employee.ValorID} </h4>
           <div className="ModalContentMenuOptions">
             <button style={{ backgroundColor: 'green' }} onClick={() => setType(2)}>Editar Empleado</button>
             <button style={{ backgroundColor: 'red' }} onClick={() => deleteEmployee()}>Eliminar Empleado</button>
-            <button style={{ backgroundColor: 'blue' }} onClick={() => navigate('/employee')}>Impersonar Empleado</button>
+            <button style={{ backgroundColor: 'blue' }} onClick={() => {
+              impersonar(employee.Nombre, employee.id)
+              navigate('/employee')
+            }}>Impersonar Empleado</button>
           </div>
           <h5 onClick={handleModalClose}>Cerrar</h5>
         </div>

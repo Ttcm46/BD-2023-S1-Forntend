@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
+import { loginCheck } from '../../Http/http';
 
 const Login = ({ auth }) => {
   const [username, setUsername] = useState('');
@@ -14,46 +15,18 @@ const Login = ({ auth }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate('/main');
-
-
-    if(state){
-      const response = await axios.post('http://localhost:8000/api/LoginCheck', {
-        username,
-        password,
-      });
-      console.log(response.data.result)
-      if (response.data.result === true) {
-        setSuccessMessage('Inicio de sesión exitoso.');
-        alert('Inicio de sesión exitoso.')
-        setErrorMessage('');
-        auth(true);
-      } else {
-        setErrorMessage('Inicio de sesión fallido.');
-        setSuccessMessage('');
-      }
-
+    const data = loginCheck(username, password)
+    if(data.result){
+      navigate('/main');
     } else {
-      const response = await axios.post('http://localhost:8000/api/InsertUsuario', {
-        username,
-        password,
-      });
-      if (response.data.result === true) {
-        setSuccessMessage('Registro exitoso.');
-        alert('Registro exitoso.')
-        setErrorMessage('');
-        auth(true);
-      } else {
-        setErrorMessage('Registro fallido.');
-        setSuccessMessage('');
-      }
+      alert("Datos incorrectos")
     }
   };
 
   return (
     <div className="login-container">
       <div className="login-box">
-        <h2>{state? "Iniciar Sesión":"Registrarse"}</h2>
+        <h2>Iniciar Sesión</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <input
@@ -79,8 +52,7 @@ const Login = ({ auth }) => {
               required
             />
           </div>
-          <button onClick={()=>navigate('/main')} className="form-button" type="submit">{state? "Iniciar Sesión":"Registrarse"}</button>
-          <p onClick={() => setState(!state)} >{state? "No tienes cuenta? Registrarse":"Ya tienes cuenta? Iniciar Sesión"}</p>
+          <button onClick={()=>navigate('/main')} className="form-button" type="submit">Iniciar Sesión</button>
         </form>
         {successMessage && <div className="success">{successMessage}</div>}
         {errorMessage && <div className="error">{errorMessage}</div>}

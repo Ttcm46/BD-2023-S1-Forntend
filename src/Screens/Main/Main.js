@@ -7,7 +7,7 @@ import { cargarXML } from '../../XML/xml';
 
 const url = 'http://localhost:8000/api';
 
-function Main({setEmployee}) {
+function Main({employee, setEmployee}) {
   const [filterParam, setFilterParam] = useState("")
   const [data, setData] = useState([
     { Name: "Nombre", TypeId: "Tipo ID", Value: "Valor", BirthDate: "Fecha de Nacimiento", Position: "Puesto", Department: "Departamento" },
@@ -95,7 +95,7 @@ function Main({setEmployee}) {
 
       {/* Modal */}
       {isModalOpen && (
-        <ModalForm nameEmployee={nameEmployee} valueEmployee={valueEmployee} handleModalClose={handleModalClose} _type={modalType} />
+        <ModalForm employee={employee} setEmployee={setEmployee} handleModalClose={handleModalClose} _type={modalType} />
       )}
     </div>
   );

@@ -39,7 +39,7 @@ const Employee = ({employee}) => {
   }
   
   useEffect(()=>{
-    getData()
+    setData(getData())
   },[])
   
   return (
